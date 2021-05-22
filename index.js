@@ -18,8 +18,10 @@ app.get('/player', async (req, res) => {
   // get account from db
   let account = await accountService.getAccount({ personaName: personaName });
 
+  if (!account) return res.sendStatus(404);
+
   // sync account
-  if (account) account = await accountHelper.syncAccount(account);
+  account = await accountHelper.syncAccount(account);
 
   res.send(account);
 });
