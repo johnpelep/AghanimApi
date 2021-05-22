@@ -30,5 +30,5 @@ app.post('/player', (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`AghanimApi listening at http://localhost:${port}`);
+  console.log(`AghanimApi listening at port:${port}`);
 });
