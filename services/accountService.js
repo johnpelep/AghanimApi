@@ -63,6 +63,7 @@ module.exports = {
     return accounts;
   },
   async getAccount(filter) {
+    console.log(process.env.CONNECTION_STRING);
     const client = new MongoClient(connectionString, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
