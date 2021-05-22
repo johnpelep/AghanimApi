@@ -18,20 +18,8 @@ app.get('/player', async (req, res) => {
   // get account from db
   let account = await accountService.getAccount({ personaName: personaName });
 
-  // check if account exist
-  if (!account)
-    return res.send(
-      `account **${personaName}** is wara sa listahan. Paki-add anay gamit an **Invite!** command`
-    );
-
   // sync account
-  account = await accountHelper.syncAccount(account);
-
-  // check if account has record
-  if (!account.record || !account.record.streakCount)
-    return res.send(
-      `account **${personaName}** has no match recorded for this month`
-    );
+  if (account) account = await accountHelper.syncAccount(account);
 
   res.send(account);
 });
