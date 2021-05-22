@@ -36,7 +36,8 @@ app.get('/player', async (req, res) => {
   res.send(account);
 });
 
-app.post('/', (req, res) => {
+// invite
+app.post('/player', (req, res) => {
   res.send('Hello worlds!');
 });
 
