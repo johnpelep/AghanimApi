@@ -1,35 +1,16 @@
 const express = require('express');
 const app = express();
 const { port } = require('./config');
-const accountService = require('./services/accountService');
-const accountHelper = require('./helpers/accountHelper');
+const players = require('./routes/players');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.get('/', (req, res) => {
-  res.send('Hello worlds!');
+  res.send('Hello world!');
 });
 
-// hindaw
-app.get('/player', async (req, res) => {
-  const personaName = req.query.personaName;
-
-  // get account from db
-  let account = await accountService.getAccount({ personaName: personaName });
-
-  if (!account) return res.sendStatus(404);
-
-  // sync account
-  account = await accountHelper.syncAccount(account);
-
-  res.send(account);
-});
-
-// invite
-app.post('/player', (req, res) => {
-  res.send('Hello worlds!');
-});
+app.use('/players', players);
 
 app.listen(port, () => {
   console.log(`AghanimApi listening at port:${port}`);
