@@ -41,7 +41,9 @@ module.exports = {
 
     return account;
   },
-  async getAccounts() {
+  async getAccounts(filter) {
+    if (!filter) filter = {};
+
     const client = new MongoClient(connectionString, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
@@ -53,7 +55,7 @@ module.exports = {
 
       const database = client.db('aghanimDB');
       const collection = database.collection('accounts');
-      const accountsCursor = await collection.find();
+      const accountsCursor = await collection.find(filter);
 
       await accountsCursor.forEach((a) => accounts.push(a));
     } finally {
