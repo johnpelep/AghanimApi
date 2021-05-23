@@ -99,42 +99,18 @@ router.post('/', async (req, res) => {
 });
 
 // delete account
-router.delete('/', async (req, res) => {
-  let profileUrl = req.body.profileUrl;
+router.delete('/:steamId64', async (req, res) => {
+  const filter = req.params;
 
-  if (profileUrl.indexOf('steamcommunity.com/') == -1)
-    return res.status(400).send({ message: 'Invalid steam profile url' });
+  // check if account exist
+  const account = await accountService.getAccount(filter);
+  if (!account) return res.sendStatus(404);
 
-  // remove last slash
-  if (profileUrl.endsWith('/')) profileUrl = profileUrl.slice(-1);
-
-  // split url and get last item
-  const steamUrlSplit = profileUrl.split('/');
-  let steamId64 = steamUrlSplit[steamUrlSplit.length - 1];
-
-  //check if link is custom url
-  if (profileUrl.indexOf('steamcommunity.com/id/') > -1) {
-    // get steamId64
-    const res = dotaApiService.resolveVanityUrl(steamId64);
-
-    if (res.response.success == 1) {
-      steamId64 = res.response.steamid;
-    }
-  }
-
-  // check if steam id is valid
-  const players = await dotaApiService.getPlayerSummary([
-    { steamId64: steamId64 },
-  ]);
-
-  if (!players.length)
-    return res.status(400).send({ message: 'Steam user not found' });
-
-  const personaName = players[0].personaname;
-  const result = await accountService.deleteAccount({ steamId64: steamId64 });
+  // delete account from db
+  const result = await accountService.deleteAccount(filter);
 
   if (result.deletedCount)
-    return res.status(204).send({ personaName: personaName });
+    return res.status(204).send({ personaName: account.personaName });
 });
 
 module.exports = router;
