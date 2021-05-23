@@ -109,8 +109,7 @@ router.delete('/:steamId64', async (req, res) => {
   // delete account from db
   const result = await accountService.deleteAccount(filter);
 
-  if (result.deletedCount)
-    return res.status(204).send({ personaName: account.personaName });
+  if (result.deletedCount) return res.sendStatus(204);
 });
 
 module.exports = router;
