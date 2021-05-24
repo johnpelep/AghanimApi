@@ -24,34 +24,41 @@ module.exports = {
       account.record.lastMatchTime
     );
 
+    // create updatedoc
+    const updateDoc = {
+      $set: {
+        personaName: account.personaName,
+        avatar: account.avatar,
+      },
+    };
+
     // get matches
     const limit = calcLimit(account.record.lastMatchTime);
     const matches = await dotaApiService.getMatches(account.steamId32, limit);
     const record = calcRecord(matches, account);
-
-    // get medal
-    const medal = await getPlayerMedal(account.steamId32);
-    if (!account.medal || (account.medal && account.medal != medal))
-      record.recordChanged = true;
-
     if (record.recordChanged) {
       delete record.recordChanged;
-      const updateDoc = {
-        $set: {
-          personaName: account.personaName,
-          avatar: account.avatar,
-          record: record,
-          medal: medal,
-        },
-      };
-      account = await accountService.getAccountAndUpdate(
-        { steamId64: account.steamId64 },
-        updateDoc
-      );
-      return account.value;
+      updateDoc.$set.record = record;
     }
 
-    return account;
+    // get medal
+    const rankTier = await getPlayerRankTier(account.steamId32);
+    const medal = getMedal(rankTier);
+    if (
+      !account.rankTier ||
+      (account.rankTier && account.rankTier != rankTier)
+    ) {
+      updateDoc.$set.medal = medal;
+      updateDoc.$set.rankTier = rankTier;
+    }
+
+    // udpate account using updatedoc
+    account = await accountService.getAccountAndUpdate(
+      { steamId64: account.steamId64 },
+      updateDoc
+    );
+
+    return account.value;
   },
   // Source: https://stackoverflow.com/questions/23259260/convert-64-bit-steam-id-to-32-bit-account-id#:~:text=To%20convert%20a%2064%20bit,from%20the%2064%20bit%20id.
   steamID64toSteamID32(steamID64) {
@@ -146,7 +153,7 @@ function calcRecord(matches, account) {
   };
 }
 
-async function getPlayerMedal(steamId32) {
+async function getPlayerRankTier(steamId32) {
   const MEDALS = [
     'Herald',
     'Guardian',
@@ -158,7 +165,20 @@ async function getPlayerMedal(steamId32) {
     'Immortal',
   ];
   const res = await dotaApiService.getPlayerData(steamId32);
-  const rankTier = res.rank_tier; //first digit medal, second digit star
+  return res.rank_tier; //first digit medal, second digit star
+}
+
+function getMedal(rankTier) {
+  const MEDALS = [
+    'Herald',
+    'Guardian',
+    'Crusader',
+    'Archon',
+    'Legend',
+    'Ancient',
+    'Divine',
+    'Immortal',
+  ];
   const medal = MEDALS[Math.trunc(rankTier / 10) - 1] + ' ' + (rankTier % 10);
   return medal;
 }
