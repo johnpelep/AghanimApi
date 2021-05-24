@@ -1,5 +1,6 @@
 const accountService = require('../services/accountService');
 const dotaApiService = require('../services/dotaApiService');
+const medals = require('../medals.json');
 const dateToday = new Date();
 const lastDayOfPreviousMonth =
   new Date(dateToday.getFullYear(), dateToday.getMonth(), 1).getTime() - 1;
@@ -41,15 +42,14 @@ module.exports = {
       updateDoc.$set.record = record;
     }
 
-    // get medal
+    // get rank info
     const rankTier = await getPlayerRankTier(account.steamId32);
     const medal = getMedal(rankTier);
-    if (
-      !account.rankTier ||
-      (account.rankTier && account.rankTier != rankTier)
-    ) {
-      updateDoc.$set.medal = medal;
-      updateDoc.$set.rankTier = rankTier;
+    if (!account.rank || (account.rank && account.rank != rank)) {
+      updateDoc.$set.rank = {
+        rankTier: rankTier,
+        medal: medal,
+      };
     }
 
     // udpate account using updatedoc
@@ -58,7 +58,9 @@ module.exports = {
       updateDoc
     );
 
-    return account.value;
+    account.rank.medalImageUrl = getMedalImage(rankTier);
+
+    return account;
   },
   // Source: https://stackoverflow.com/questions/23259260/convert-64-bit-steam-id-to-32-bit-account-id#:~:text=To%20convert%20a%2064%20bit,from%20the%2064%20bit%20id.
   steamID64toSteamID32(steamID64) {
@@ -83,7 +85,7 @@ async function removeLastMonthRecord(steamId64) {
     { steamId64: steamId64 },
     updateDoc
   );
-  return account.value;
+  return account;
 }
 
 function calcLimit(lastMatchTime) {
@@ -181,4 +183,9 @@ function getMedal(rankTier) {
   ];
   const medal = MEDALS[Math.trunc(rankTier / 10) - 1] + ' ' + (rankTier % 10);
   return medal;
+}
+
+function getMedalImage(rankTier) {
+  const medal = medals.find((m) => m.rankTier == rankTier);
+  return medal.imageUrl;
 }

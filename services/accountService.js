@@ -39,7 +39,7 @@ module.exports = {
       await client.close();
     }
 
-    return account;
+    return account.value;
   },
   async getAccounts(filter) {
     if (!filter) filter = {};
