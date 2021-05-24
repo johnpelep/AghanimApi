@@ -45,7 +45,7 @@ module.exports = {
     // get rank info
     const rankTier = await getPlayerRankTier(account.steamId32);
     const medal = getMedal(rankTier);
-    if (!account.rank || (account.rank && account.rank != rank)) {
+    if (!account.rank || (account.rank && account.rank.rankTier != rankTier)) {
       updateDoc.$set.rank = {
         rankTier: rankTier,
         medal: medal,
