@@ -4,6 +4,7 @@ const {
   getPlayerSummaryUrl,
   getMatchesUrl,
   resolveVanityUrl,
+  playerDataUrl,
 } = require('../config');
 
 module.exports = {
@@ -35,6 +36,15 @@ module.exports = {
   async resolveVanityUrl(vanityUrl) {
     const res = await axios
       .get(`${resolveVanityUrl}?key=${key}&vanityurl=${vanityUrl}`)
+      .then((response) => response)
+      .catch((err) => {
+        throw err;
+      });
+    return res.data;
+  },
+  async getPlayerData(steamId32) {
+    const res = await axios
+      .get(`${playerDataUrl.replace('{account_id}', steamId32)}`)
       .then((response) => response)
       .catch((err) => {
         throw err;

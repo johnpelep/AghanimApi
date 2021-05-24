@@ -24,9 +24,15 @@ module.exports = {
       account.record.lastMatchTime
     );
 
+    // get matches
     const limit = calcLimit(account.record.lastMatchTime);
     const matches = await dotaApiService.getMatches(account.steamId32, limit);
     const record = calcRecord(matches, account);
+
+    // get medal
+    const medal = await getPlayerMedal(account.steamId32);
+    if (!account.medal || (account.medal && account.medal != medal))
+      record.recordChanged = true;
 
     if (record.recordChanged) {
       delete record.recordChanged;
@@ -35,6 +41,7 @@ module.exports = {
           personaName: account.personaName,
           avatar: account.avatar,
           record: record,
+          medal: medal,
         },
       };
       account = await accountService.getAccountAndUpdate(
@@ -137,4 +144,21 @@ function calcRecord(matches, account) {
     lastMatchTime: account.record.lastMatchTime,
     recordChanged: recordChanged,
   };
+}
+
+async function getPlayerMedal(steamId32) {
+  const MEDALS = [
+    'Herald',
+    'Guardian',
+    'Crusader',
+    'Archon',
+    'Legend',
+    'Ancient',
+    'Divine',
+    'Immortal',
+  ];
+  const res = await dotaApiService.getPlayerData(steamId32);
+  const rankTier = res.rank_tier; //first digit medal, second digit star
+  const medal = MEDALS[Math.trunc(rankTier / 10) - 1] + ' ' + (rankTier % 10);
+  return medal;
 }

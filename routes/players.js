@@ -80,19 +80,17 @@ router.post('/', async (req, res) => {
     });
   }
 
-  // calc steamId32 from steamId64
+  // add account to db
   const steamId32 = accountHelper.steamID64toSteamID32(steamId64);
-
-  // create account document
   account = {
     personaName: player.personaname,
     steamId64: steamId64,
     steamId32: steamId32,
     avatar: player.avatarfull,
   };
-
   await accountService.addAcount(account);
 
+  // sync account
   await accountHelper.syncAccount(account);
 
   return res.status(201).send({ personaName: player.personaname });
