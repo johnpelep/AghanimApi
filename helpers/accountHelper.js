@@ -1,6 +1,6 @@
 const accountService = require('../services/accountService');
 const dotaApiService = require('../services/dotaApiService');
-const medals = require('../medals.json');
+const medals = require('../constants/medals.json');
 const dateToday = new Date();
 const lastDayOfPreviousMonth =
   new Date(dateToday.getFullYear(), dateToday.getMonth(), 1).getTime() - 1;

@@ -1,5 +1,5 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 const accountService = require('../services/accountService');
 const accountHelper = require('../helpers/accountHelper');
 const dotaApiService = require('../services/dotaApiService');
@@ -96,8 +96,8 @@ router.post('/', async (req, res) => {
     updateDoc
   );
 
-  if (account.value) {
-    await accountHelper.syncAccount(account.value);
+  if (account) {
+    await accountHelper.syncAccount(account);
     return res.status(400).send({
       message: 'Account already exists',
       personaName: player.personaname,

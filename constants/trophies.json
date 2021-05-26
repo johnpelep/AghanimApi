@@ -1,0 +1,32 @@
+[
+  {
+    "type": "battlepoint6",
+    "color": "151515",
+    "imageUrl": "https://static.wikia.nocookie.net/dota2_gamepedia/images/2/2f/Trophy_battlepoint6.png/revision/latest/scale-to-width-down/120?cb=20150910031457"
+  },
+  {
+    "type": "battlepoint5",
+    "color": "F08205",
+    "imageUrl": "https://static.wikia.nocookie.net/dota2_gamepedia/images/1/1f/Trophy_battlepoint5.png/revision/latest/scale-to-width-down/120?cb=20150910031452"
+  },
+  {
+    "type": "battlepoint4",
+    "color": "EDE2A0",
+    "imageUrl": "https://static.wikia.nocookie.net/dota2_gamepedia/images/9/96/Trophy_battlepoint4.png/revision/latest/scale-to-width-down/120?cb=20150910031447"
+  },
+  {
+    "type": "battlepoint3",
+    "color": "CDC5AD",
+    "imageUrl": "https://static.wikia.nocookie.net/dota2_gamepedia/images/1/11/Trophy_battlepoint3.png/revision/latest/scale-to-width-down/120?cb=20150910031439"
+  },
+  {
+    "type": "battlepoint2",
+    "color": "A6A4A3",
+    "imageUrl": "https://static.wikia.nocookie.net/dota2_gamepedia/images/4/4a/Trophy_battlepoint2.png/revision/latest/scale-to-width-down/120?cb=20150910031408"
+  },
+  {
+    "type": "battlepoint1",
+    "color": "775645",
+    "imageUrl": "https://static.wikia.nocookie.net/dota2_gamepedia/images/3/33/Trophy_battlepoint1.png/revision/latest/scale-to-width-down/120?cb=20150910031405"
+  }
+]
