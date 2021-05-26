@@ -4,17 +4,27 @@ const accountService = require('../services/accountService');
 const accountHelper = require('../helpers/accountHelper');
 const dotaApiService = require('../services/dotaApiService');
 
-// get account list
+// GET : /players
 router.get('/', async (req, res) => {
   // get accounts from db
   const accounts = await accountService.getAccounts(req.query);
 
   if (!accounts.length) return res.sendStatus(404);
 
+  // check for updates
+  for (let i = 0; i < accounts.length; i++) {
+    let account = accounts[i];
+
+    // sync account info
+    account = await accountHelper.syncAccount(account, 2);
+
+    accounts[i] = account;
+  }
+
   res.send(accounts);
 });
 
-// get account
+// GET : /players/5
 router.get('/:steamId64', async (req, res) => {
   // get account from db
   let account = await accountService.getAccount(req.params);
@@ -27,7 +37,21 @@ router.get('/:steamId64', async (req, res) => {
   res.send(account);
 });
 
-// add account
+// GET : /players/5/record
+router.get('/:steamId64/record', async (req, res) => {
+  // get account from db
+  let account = await accountService.getAccount(req.params);
+
+  if (!account) return res.sendStatus(404);
+
+  // sync account record
+  account = await accountHelper.syncAccount(account, 3);
+
+  // send account record to client
+  res.send(account.record);
+});
+
+// POST : /players
 router.post('/', async (req, res) => {
   let profileUrl = req.body.profileUrl;
 
@@ -96,7 +120,7 @@ router.post('/', async (req, res) => {
   return res.status(201).send({ personaName: player.personaname });
 });
 
-// delete account
+// DELETE : /players/5
 router.delete('/:steamId64', async (req, res) => {
   const filter = req.params;
 

@@ -6,7 +6,82 @@ const lastDayOfPreviousMonth =
   new Date(dateToday.getFullYear(), dateToday.getMonth(), 1).getTime() - 1;
 
 module.exports = {
-  async syncAccount(account) {
+  /**
+   * @name syncAccount
+   * @description Sync account info and/or record.
+   * @param {object} account Account to update.
+   * @param {number} [syncType=1] 1 for Both, 2 for Info, 3 for Record.
+   *
+   * @returns {object} Updated account.
+   */
+  async syncAccount(account, syncType) {
+    if (!syncType) syncType = 1;
+
+    let updateDoc = {
+      $set: {},
+    };
+
+    if (syncType == 1 || syncType == 2)
+      updateDoc = await this.getAccountInfoUpdate(account);
+
+    if (syncType == 1 || syncType == 3)
+      updateDoc = await this.getAccountRecordUpdate(account, updateDoc);
+
+    // if update found, sync db
+    if (Object.keys(updateDoc.$set).length) {
+      account = await accountService.getAccountAndUpdate(
+        { steamId64: account.steamId64 },
+        updateDoc
+      );
+    }
+
+    // set medal image
+    if (account.rank) {
+      account.rank.medalImageUrl = getMedalImage(account.rank.rankTier);
+    }
+
+    return account;
+  },
+  async getAccountInfoUpdate(account, updateDoc) {
+    if (!updateDoc) {
+      updateDoc = {
+        $set: {},
+      };
+    }
+
+    // get player data
+    const player = await dotaApiService.getPlayerData(account.steamId32);
+
+    // check rank update
+    if (
+      !account.rank ||
+      (account.rank && account.rank.rankTier != player.rank_tier)
+    ) {
+      updateDoc.$set.rank = {
+        rankTier: player.rank_tier,
+        medal: getMedal(player.rank_tier),
+      };
+    }
+
+    // check personaname update
+    if (account.personaName != player.profile.personaname) {
+      updateDoc.$set.personaName = player.profile.personaname;
+    }
+
+    // check avatar update
+    if (account.avatar != player.profile.avatarfull) {
+      updateDoc.$set.avatar = player.profile.avatarfull;
+    }
+
+    return updateDoc;
+  },
+  async getAccountRecordUpdate(account, updateDoc) {
+    if (!updateDoc) {
+      updateDoc = {
+        $set: {},
+      };
+    }
+
     // remove last month record
     if (
       account.record &&
@@ -15,23 +90,17 @@ module.exports = {
       account = await removeLastMonthRecord(account.steamId64);
     }
 
+    // initialize record obj
     if (!account.record) {
       account.record = {
         lastMatchTime: null,
       };
     }
 
+    // initialize lastMatchTime property
     account.record.lastMatchTime = setLastMatchTime(
       account.record.lastMatchTime
     );
-
-    // create updatedoc
-    const updateDoc = {
-      $set: {
-        personaName: account.personaName,
-        avatar: account.avatar,
-      },
-    };
 
     // get matches
     const limit = calcLimit(account.record.lastMatchTime);
@@ -42,28 +111,10 @@ module.exports = {
       updateDoc.$set.record = record;
     }
 
-    // get rank info
-    const rankTier = await getPlayerRankTier(account.steamId32);
-    const medal = getMedal(rankTier);
-    if (!account.rank || (account.rank && account.rank.rankTier != rankTier)) {
-      updateDoc.$set.rank = {
-        rankTier: rankTier,
-        medal: medal,
-      };
-    }
-
-    // udpate account using updatedoc
-    account = await accountService.getAccountAndUpdate(
-      { steamId64: account.steamId64 },
-      updateDoc
-    );
-
-    account.rank.medalImageUrl = getMedalImage(rankTier);
-
-    return account;
+    return updateDoc;
   },
-  // Source: https://stackoverflow.com/questions/23259260/convert-64-bit-steam-id-to-32-bit-account-id#:~:text=To%20convert%20a%2064%20bit,from%20the%2064%20bit%20id.
   steamID64toSteamID32(steamID64) {
+    // Source: https://stackoverflow.com/questions/23259260/convert-64-bit-steam-id-to-32-bit-account-id#:~:text=To%20convert%20a%2064%20bit,from%20the%2064%20bit%20id.
     return (Number(steamID64.substr(-16, 16)) - 6561197960265728).toString();
   },
 };
@@ -89,7 +140,7 @@ async function removeLastMonthRecord(steamId64) {
 }
 
 function calcLimit(lastMatchTime) {
-  const ABOVE_AVG_GAMES_PER_DAY = 15;
+  const ABOVE_AVG_GAMES_PER_DAY = 10;
   const dateToday = new Date();
   const lastMatchDate = new Date(lastMatchTime);
 
@@ -155,21 +206,6 @@ function calcRecord(matches, account) {
   };
 }
 
-async function getPlayerRankTier(steamId32) {
-  const MEDALS = [
-    'Herald',
-    'Guardian',
-    'Crusader',
-    'Archon',
-    'Legend',
-    'Ancient',
-    'Divine',
-    'Immortal',
-  ];
-  const res = await dotaApiService.getPlayerData(steamId32);
-  return res.rank_tier; //first digit medal, second digit star
-}
-
 function getMedal(rankTier) {
   const MEDALS = [
     'Herald',
@@ -181,7 +217,7 @@ function getMedal(rankTier) {
     'Divine',
     'Immortal',
   ];
-  const medal = MEDALS[Math.trunc(rankTier / 10) - 1] + ' ' + (rankTier % 10);
+  const medal = MEDALS[Math.trunc(rankTier / 10) - 1] + ' ' + (rankTier % 10); //first digit medal, second digit star
   return medal;
 }
 

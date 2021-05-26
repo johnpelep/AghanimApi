@@ -45,11 +45,11 @@ module.exports = {
   async getPlayerData(steamId32) {
     const res = await axios
       .get(`${playerDataUrl.replace('{account_id}', steamId32)}`)
-      .then((response) => response)
+      .then((response) => response.data)
       .catch((err) => {
         throw err;
       });
-    return res.data;
+    return res;
   },
 };
 
