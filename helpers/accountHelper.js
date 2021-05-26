@@ -217,8 +217,9 @@ function getMedal(rankTier) {
     'Divine',
     'Immortal',
   ];
-  const medal = MEDALS[Math.trunc(rankTier / 10) - 1] + ' ' + (rankTier % 10); //first digit medal, second digit star
-  return medal;
+  const medal = MEDALS[Math.trunc(rankTier / 10) - 1]; // first digit medal
+  const star = rankTier < 80 ? ` ${rankTier % 10}` : ''; // second digit star
+  return medal + star;
 }
 
 function getMedalImage(rankTier) {
