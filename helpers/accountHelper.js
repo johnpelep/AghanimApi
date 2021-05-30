@@ -113,6 +113,27 @@ module.exports = {
 
     return updateDoc;
   },
+  async getAccountStatus(accounts) {
+    const players = await dotaApiService.getPlayerSummary(accounts);
+
+    for (let i = 0; i < accounts.length; i++) {
+      const account = accounts[i];
+      const player = players.find((p) => p.steamid == account.steamId64);
+
+      if (!player) return;
+
+      account.status = {
+        personaState: player.personastate,
+      };
+
+      if (player.gameextrainfo)
+        account.status.gameExtraInfo = player.gameextrainfo;
+
+      if (player.lastlogoff) account.status.lastLogOff = player.lastlogoff;
+    }
+
+    return accounts;
+  },
   steamID64toSteamID32(steamID64) {
     // Source: https://stackoverflow.com/questions/23259260/convert-64-bit-steam-id-to-32-bit-account-id#:~:text=To%20convert%20a%2064%20bit,from%20the%2064%20bit%20id.
     return (Number(steamID64.substr(-16, 16)) - 6561197960265728).toString();
@@ -207,19 +228,8 @@ function calcRecord(matches, account) {
 }
 
 function getMedal(rankTier) {
-  const MEDALS = [
-    'Herald',
-    'Guardian',
-    'Crusader',
-    'Archon',
-    'Legend',
-    'Ancient',
-    'Divine',
-    'Immortal',
-  ];
-  const medal = MEDALS[Math.trunc(rankTier / 10) - 1]; // first digit medal
-  const star = rankTier < 80 ? ` ${rankTier % 10}` : ''; // second digit star
-  return medal + star;
+  const medal = medals.find((m) => m.rankTier == rankTier);
+  return medal.name;
 }
 
 function getMedalImage(rankTier) {

@@ -7,7 +7,10 @@ const dotaApiService = require('../services/dotaApiService');
 // GET : /players
 router.get('/', async (req, res) => {
   // get accounts from db
-  const accounts = await accountService.getAccounts(req.query);
+  let accounts = await accountService.getAccounts(req.query);
+
+  // get accounts steam status
+  accounts = await accountHelper.getAccountStatus(accounts);
 
   if (!accounts.length) return res.sendStatus(404);
 
