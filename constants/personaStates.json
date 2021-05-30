@@ -1,0 +1,30 @@
+[
+  {
+    "personaState": 0,
+    "userStatus": "Offline"
+  },
+  {
+    "personaState": 1,
+    "userStatus": "Online"
+  },
+  {
+    "personaState": 2,
+    "userStatus": "Busy"
+  },
+  {
+    "personaState": 3,
+    "userStatus": "Away"
+  },
+  {
+    "personaState": 4,
+    "userStatus": "Snooze"
+  },
+  {
+    "personaState": 5,
+    "userStatus": "Looking to trade"
+  },
+  {
+    "personaState": 6,
+    "userStatus": "Looking to play"
+  }
+]

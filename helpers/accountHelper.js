@@ -1,6 +1,7 @@
 const accountService = require('../services/accountService');
 const dotaApiService = require('../services/dotaApiService');
 const medals = require('../constants/medals.json');
+const personaStates = require('../constants/personaStates.json');
 const dateToday = new Date();
 const lastDayOfPreviousMonth =
   new Date(dateToday.getFullYear(), dateToday.getMonth(), 1).getTime() - 1;
@@ -122,13 +123,17 @@ module.exports = {
 
       if (!player) return;
 
+      // get user status
       account.status = {
-        personaState: player.personastate,
+        personaState: personaStates.find(
+          (p) => p.personaState == player.personastate
+        ).userStatus,
       };
 
-      if (player.gameextrainfo)
-        account.status.gameExtraInfo = player.gameextrainfo;
+      // get game user currently playing
+      if (player.gameextrainfo) account.status.game = player.gameextrainfo;
 
+      // get last log off
       if (player.lastlogoff) account.status.lastLogOff = player.lastlogoff;
     }
 
