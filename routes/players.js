@@ -6,20 +6,28 @@ const dotaApiService = require('../services/dotaApiService');
 
 // GET : /players
 router.get('/', async (req, res) => {
+  // get filter
+  let filter = {};
+  if (req.query.personaName) filter.personaName = req.query.personaName;
+
   // get accounts from db
-  let accounts = await accountService.getAccounts(req.query);
+  let accounts = await accountService.getAccounts(filter);
 
   // get accounts steam status
   accounts = await accountHelper.getAccountStatus(accounts);
 
   if (!accounts.length) return res.sendStatus(404);
 
+  // get sync type
+  let syncType = 1;
+  if (req.query.syncType) syncType = Number(req.query.syncType);
+
   // check for updates
   for (let i = 0; i < accounts.length; i++) {
     let account = accounts[i];
 
     // sync account info
-    account = await accountHelper.syncAccount(account, 2);
+    account = await accountHelper.syncAccount(account, syncType);
 
     accounts[i] = account;
   }

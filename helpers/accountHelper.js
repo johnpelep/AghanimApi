@@ -125,7 +125,8 @@ module.exports = {
 
       // get user status
       account.status = {
-        personaState: personaStates.find(
+        personaState: player.personastate,
+        userStatus: personaStates.find(
           (p) => p.personaState == player.personastate
         ).userStatus,
       };
