@@ -1,0 +1,11 @@
+---
+application:
+  name: "aghanimapi"
+  project: "aghanim-api"
+  organization: "QoveryCommunity"
+routers:
+- name: "main-aghanimapi"
+  routes:
+  - application_name: "aghanimapi"
+    paths:
+    - "/*"
