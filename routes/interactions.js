@@ -12,13 +12,23 @@ router.post('/', verifyKeyMiddleware(discordPublicKey), (req, res) => {
     return res.send({ type: InteractionResponseType.PONG });
 
   const message = req.body;
-  if (message.type === InteractionType.APPLICATION_COMMAND) {
+
+  if (message) {
+    const data = message.data;
+
+    // get content
+    let content = data.name;
+    if (data.options.length) content += ' ' + data.options[0].value;
+
+    // send content
+    // if (message.type === InteractionType.APPLICATION_COMMAND) {
     res.send({
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
-        content: 'Hello world',
+        content: content,
       },
     });
+    // }
   }
 });
 
