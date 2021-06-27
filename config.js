@@ -6,4 +6,5 @@ module.exports = {
   resolveVanityUrl: process.env.RESOLVE_VANITY_URL,
   connectionString: process.env.CONNECTION_STRING,
   playerDataUrl: process.env.PLAYER_DATA_URL,
+  discordPublicKey: process.env.DISCORD_PUBLIC_KEY,
 };

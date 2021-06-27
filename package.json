@@ -21,7 +21,8 @@
   "dependencies": {
     "axios": "^0.21.1",
     "express": "^4.17.1",
-    "mongodb": "^3.6.6"
+    "mongodb": "^3.6.6",
+    "tweetnacl": "^1.0.3"
   },
   "devDependencies": {
     "dotenv": "^9.0.2"
