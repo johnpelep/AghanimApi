@@ -4,6 +4,8 @@ const nacl = require('tweetnacl');
 const { discordPublicKey } = require('../config');
 
 router.post('/', (req, res) => {
+  if (req.body.type == 1) return res.status(200).send({ type: 1 });
+
   // validate headers
   const signature = req.get('X-Signature-Ed25519');
   const timestamp = req.get('X-Signature-Timestamp');
@@ -18,8 +20,6 @@ router.post('/', (req, res) => {
   if (!isVerified) {
     return res.status(401).end('invalid request signature');
   }
-
-  if (req.body.type == 1) return res.status(200).send({ type: 1 });
 
   return res
     .status(200)
