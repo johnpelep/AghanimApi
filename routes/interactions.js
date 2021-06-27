@@ -18,7 +18,8 @@ router.post('/', verifyKeyMiddleware(discordPublicKey), (req, res) => {
 
     // get content
     let content = data.name;
-    if (data.options.length) content += ' ' + data.options[0].value;
+    if (data.options && data.options.length)
+      content += ' ' + data.options[0].value;
 
     // send content
     // if (message.type === InteractionType.APPLICATION_COMMAND) {
