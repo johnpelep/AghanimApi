@@ -17,7 +17,7 @@ router.post('/', verifyKeyMiddleware(discordPublicKey), (req, res) => {
     const data = message.data;
 
     // get content
-    let content = data.name;
+    let content = data.name + '!';
     if (data.options && data.options.length)
       content += ' ' + data.options[0].value;
 
