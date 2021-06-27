@@ -1,29 +1,25 @@
 const express = require('express');
 const router = express.Router();
-const nacl = require('tweetnacl');
 const { discordPublicKey } = require('../config');
+const {
+  verifyKeyMiddleware,
+  InteractionType,
+  InteractionResponseType,
+} = require('discord-interactions');
 
-router.post('/', (req, res) => {
-  if (req.body.type == 1) return res.status(200).send({ type: 1 });
+router.post('/', verifyKeyMiddleware(discordPublicKey), (req, res) => {
+  if (req.body.type == InteractionType.PING)
+    return res.send({ type: InteractionResponseType.PONG });
 
-  // validate headers
-  const signature = req.get('X-Signature-Ed25519');
-  const timestamp = req.get('X-Signature-Timestamp');
-  const body = req.rawBody; // rawBody is expected to be a string, not raw bytes
-
-  const isVerified = nacl.sign.detached.verify(
-    Buffer.from(timestamp + body),
-    Buffer.from(signature, 'hex'),
-    Buffer.from(discordPublicKey, 'hex')
-  );
-
-  if (!isVerified) {
-    return res.status(401).end('invalid request signature');
+  const message = req.body;
+  if (message.type === InteractionType.APPLICATION_COMMAND) {
+    res.send({
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        content: 'Hello world',
+      },
+    });
   }
-
-  return res
-    .status(200)
-    .send({ type: 4, data: { content: 'congrats sa slash command' } });
 });
 
 module.exports = router;
