@@ -1,10 +1,12 @@
 const express = require('express');
+const cors = require('cors');
 const app = express();
 const { port } = require('./config');
 const players = require('./routes/players');
 const constants = require('./routes/constants');
 const interactions = require('./routes/interactions');
 
+app.use(cors());
 app.use(maybe(express.json()));
 app.use(maybe(express.urlencoded({ extended: true })));
 

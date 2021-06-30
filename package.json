@@ -20,6 +20,7 @@
   "homepage": "https://github.com/johnpelep/AghanimApi#readme",
   "dependencies": {
     "axios": "^0.21.1",
+    "cors": "^2.8.5",
     "discord-interactions": "^2.3.0",
     "express": "^4.17.1",
     "mongodb": "^3.6.6"
