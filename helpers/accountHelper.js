@@ -2,7 +2,7 @@ const accountService = require('../services/accountService');
 const dotaApiService = require('../services/dotaApiService');
 const medals = require('../constants/medals.json');
 const personaStates = require('../constants/personaStates.json');
-const dateToday = new Date();
+const dateToday = getTimeInPH();
 const lastDayOfPreviousMonth =
   new Date(dateToday.getFullYear(), dateToday.getMonth(), 1).getTime() - 1;
 
@@ -241,4 +241,21 @@ function getMedal(rankTier) {
 function getMedalImage(rankTier) {
   const medal = medals.find((m) => m.rankTier == rankTier);
   return medal.imageUrl;
+}
+
+//https://stackoverflow.com/a/8207708
+function getTimeInPH() {
+  const OFFSET = 8; //UTC+8
+
+  // create Date object for current location
+  var d = new Date();
+
+  // convert to msec
+  // subtract local time zone offset
+  // get UTC time in msec
+  var utc = d.getTime() + d.getTimezoneOffset() * 60000;
+
+  // create new Date object for different city
+  // using supplied offset
+  return new Date(utc + 3600000 * OFFSET);
 }
