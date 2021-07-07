@@ -234,6 +234,7 @@ function calcRecord(matches, account) {
 }
 
 function getMedal(rankTier) {
+  if (!rankTier) rankTier = 0;
   const medal = medals.find((m) => m.rankTier == rankTier);
   return medal.name;
 }

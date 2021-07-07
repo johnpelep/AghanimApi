@@ -1,5 +1,10 @@
 [
   {
+    "rankTier": 0,
+    "name": "Uncalibrated",
+    "imageUrl": "https://static.wikia.nocookie.net/dota2_gamepedia/images/e/e7/SeasonalRank0-0.png/revision/latest/scale-to-width-down/230?cb=20171124184310"
+  },
+  {
     "rankTier": 11,
     "name": "Herald I",
     "imageUrl": "https://static.wikia.nocookie.net/dota2_gamepedia/images/8/85/SeasonalRank1-1.png/revision/latest/scale-to-width-down/160?cb=20190130002445"
