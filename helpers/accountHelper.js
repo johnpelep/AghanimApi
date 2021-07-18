@@ -38,6 +38,7 @@ module.exports = {
 
     // set medal image
     if (account.rank) {
+      if (!account.rank.rankTier) account.rank.rankTier = 0;
       account.rank.medalImageUrl = getMedalImage(account.rank.rankTier);
     }
 
@@ -55,8 +56,9 @@ module.exports = {
 
     // check rank update
     if (
-      !account.rank ||
-      (account.rank && account.rank.rankTier != player.rank_tier)
+      player.rank_tier &&
+      (!account.rank ||
+        (account.rank && account.rank.rankTier != player.rank_tier))
     ) {
       updateDoc.$set.rank = {
         rankTier: player.rank_tier,
@@ -64,14 +66,16 @@ module.exports = {
       };
     }
 
-    // check personaname update
-    if (account.personaName != player.profile.personaname) {
-      updateDoc.$set.personaName = player.profile.personaname;
-    }
+    if (player.profile) {
+      // check personaname update
+      if (account.personaName != player.profile.personaname) {
+        updateDoc.$set.personaName = player.profile.personaname;
+      }
 
-    // check avatar update
-    if (account.avatar != player.profile.avatarfull) {
-      updateDoc.$set.avatar = player.profile.avatarfull;
+      // check avatar update
+      if (account.avatar != player.profile.avatarfull) {
+        updateDoc.$set.avatar = player.profile.avatarfull;
+      }
     }
 
     return updateDoc;
